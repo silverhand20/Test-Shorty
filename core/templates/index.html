@@ -24,7 +24,7 @@
            <div class="form-floating mb-3">
                 <div class="form-group" >
                     <h7>Life Time</h7>
-                    {{ form.temporary_url(class="form-control", id="temporary_url", placeholder="Enter Life Time", type="number") }}
+                    {{ form.time_life(class="form-control", id="time_life", placeholder="Enter Life Time", type="number") }}
                 </div>
             </div>
       <div class="form-group text-center">
@@ -41,7 +41,6 @@
 
   <thead>
     <tr>
-      <th scope="col">#</th>
       <th scope="col">ShortUrl</th>
       <th scope="col">Life time (days)</th>
       <th scope="col">Day creating</th>
@@ -50,9 +49,8 @@
   <tbody>
  {% for el in short_id %}
     <tr class="class_created">
-      <th scope="row">{{ el.id }}</th>
       <td>http://127.0.0.1:5000/{{ el.short_id }}</td>
-      <td>{{ el.temporary_url }}</td>
+      <td>{{ el.time_life }}</td>
       <td class="created_at" style="display: none;">{{ el.created_at }}</td>
       <td id="time"> </td>
     </tr>
