@@ -1,4 +1,5 @@
 import time
+import argparse
 from flask_restful import Resource, reqparse, abort
 from core.models import ShortUrls
 from core import app, db, api
@@ -14,9 +15,10 @@ from flask import render_template, request, flash, redirect, url_for
 
 class UrlForm(FlaskForm):
     """Entity to WTF-FORM"""
+
     url = StringField('url', validators=[InputRequired(message='The URL is required!')])
     custom_id = StringField('custom_id')
-    time_life = IntegerField('time_life', validators=[NumberRange(min=1, max=360, message='Minimum input value 1, maximum input value 360'), InputRequired(message='The Number is required!')])
+    time_life = IntegerField('time_life',  validators=[NumberRange(min=1, max=360, message='Minimum input value 1, maximum input value 360'), InputRequired(message='The URL is required!')])
 
 def generate_short_id(num_of_chars: int):
     """Function to generate short_id of specified number of characters if custom_id is empty"""
@@ -41,9 +43,6 @@ def index():
 
             if not custom_id_form:
                 custom_id_form = generate_short_id(3)
-
-            if not time_life_form:
-                time_life_form = 90
 
             """Calculations expiry date"""
             days = time.time() + (int(time_life_form) * 24 * 60 * 60)
@@ -81,13 +80,28 @@ def redirect_url(short_id):
         return redirect(url_for('index'))
 
 
+
 """-----------------------API FUNCTION------------------------------------"""
+def ranged_type(value_type, min_value, max_value):
+    """
+    Return function handle of an argument type function for ArgumentParser checking a range:
+        min_value <= arg <= max_value
+    """
+    def range_checker(arg: str):
+        try:
+            f = value_type(arg)
+        except ValueError:
+            raise argparse.ArgumentTypeError(f'must be a valid {value_type}')
+        if f < min_value or f > max_value:
+            raise argparse.ArgumentTypeError(f'must be within [{min_value}, {max_value}]')
+        return f
+    return range_checker
 
 """Creating entity Arguments"""
 urlpost_args = reqparse.RequestParser()
 urlpost_args.add_argument("original_url", type=str, help="The URL is required!", required=True)
 urlpost_args.add_argument("short_id", type=str, help="The ID is required!", required=True)
-urlpost_args.add_argument("time_life", type=int, help="The Time Life is required!", required=True)
+urlpost_args.add_argument("time_life",  type=ranged_type(int, 1, 360))
 
 """Api Get to Endpoint /list_urls"""
 class URL_list(Resource):
@@ -113,9 +127,6 @@ class URL_create(Resource):
 
         if not url_api:
             abort(409, message='The URL is required!')
-
-        if not time_life_api:
-            time_life_api = 90
 
         if not short_id_api:
             short_id_api = generate_short_id(3)

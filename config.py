@@ -1,10 +1,9 @@
 from decouple import config
-
+"""Global config Database and Flask"""
 
 DATABASE_URI = config("DATABASE_URL")
-if DATABASE_URI.startswith("postgres://"):
-    DATABASE_URI = DATABASE_URI.replace("postgres://", "postgresql://", 1)
-
+if DATABASE_URI.startswith("sqlite://"):
+    DATABASE_URI = DATABASE_URI.replace("sqlite://", "sqlite://", 1)
 
 class Config(object):
     DEBUG = True
@@ -14,20 +13,16 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = DATABASE_URI
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-
 class ProductionConfig(Config):
     DEBUG = False
-
 
 class StagingConfig(Config):
     DEVELOPMENT = True
     DEBUG = True
 
-
 class DevelopmentConfig(Config):
     DEVELOPMENT = True
     DEBUG = True
-
 
 class TestingConfig(Config):
     TESTING = True
