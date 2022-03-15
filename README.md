@@ -56,6 +56,8 @@ flask db upgrade
 ### How to use App
 * Run file main.py 
 
+* Go to main page http://127.0.0.1:5000/
+
 * Enter in the field (URL) your link want it to be shorten
 
 * Enter in the field (Life Time) how long days the link should exist
